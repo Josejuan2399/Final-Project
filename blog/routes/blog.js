@@ -175,7 +175,29 @@ router.post("/:slug/delete", (req, res, next) => {
   });
 });
 
+// View a post
+router.get("/:slug", (req, res, next) => {
+  models.Post.findOne({
+    where: {
+      slug: req.params.slug
+    }
+  }).then(post => {
+    if (!post) {
+      return res.render("error", {
+        message: "Page not found.",
+        error: {
+          status: 404,
+        }
+      });
+    }
 
+    post = post.get({ plain: true });
+    client.getUser(post.authorId).then(user => {
+      post.authorName = user.profile.firstName + " " + user.profile.lastName;
+      res.render("post", { post });
+    });
+  });
+});
 
 
 module.exports = router;

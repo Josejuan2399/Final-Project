@@ -54,6 +54,23 @@ router.get("/", (req, res) => {
   });
 });
 
+// Render the user dashboard
+router.get("/dashboard", ensureAuthenticated, (req, res, next) => {
+  models.Post.findAll({
+    where: {
+      authorId: req.user.id
+    },
+    order: sequelize.literal("createdAt DESC")
+  }).then(posts => {
+    let postData = [];
+
+    posts.forEach(post => {
+      postData.push(post.get({ plain: true }));
+    });
+
+    return res.render("dashboard", { posts: postData });
+  });
+});
 
 
 

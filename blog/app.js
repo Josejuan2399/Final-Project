@@ -11,8 +11,8 @@ const usersRouter = require("./routes/users");
 
 const app = express();
 const client = new okta.Client({
-  orgUrl: "dev-661879.oktapreview.com",
-  token: "{yourOktaToken}"
+  orgUrl: "https://dev-661879-admin.oktapreview.com",
+  token: "00viLgpPPV9Nm4ILgR_kTeD6DDtu-HfZfL6ANYw20g"
 });
 
 app.set("views", path.join(__dirname, "views"));
@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 const oidc = new ExpressOIDC({
-  issuer: "dev-661879.oktapreview.com/oauth2/default",
+  issuer: "https://dev-661879-admin.oktapreview.com/oauth2/default",
   client_id: "0oafvb9iebMTqgv1A0h7",
   client_secret: "BpvpCTvW43NiZmOxxDm72Y92QBiTf9VCF_h2DIuR",
   redirect_uri: "http://localhost:3000/users/callback",

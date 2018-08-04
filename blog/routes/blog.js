@@ -97,6 +97,62 @@ router.post("/dashboard", ensureAuthenticated, (req, res, next) => {
   });
 });
 
+// Render the edit post page
+router.get("/:slug/edit", ensureAuthenticated, (req, res, next) => {
+  models.Post.findOne({
+    where: {
+      slug: req.params.slug,
+      authorId: req.user.id
+    }
+  }).then(post => {
+    if (!post) {
+      return res.render("error", {
+        message: "Page not found.",
+        error: {
+          status: 404,
+        }
+      });
+    }
+
+    post = post.get({ plain: true });
+    client.getUser(post.authorId).then(user => {
+      post.authorName = user.profile.firstName + " " + user.profile.lastName;
+      res.render("edit", { post });
+    });
+  });
+});
+
+// Update a post
+router.post("/:slug/edit", ensureAuthenticated, (req, res, next) => {
+  models.Post.findOne({
+    where: {
+      slug: req.params.slug,
+      authorId: req.user.id
+    }
+  }).then(post => {
+    if (!post) {
+      return res.render("error", {
+        message: "Page not found.",
+        error: {
+          status: 404,
+        }
+      });
+    }
+
+    post.update({
+      title: req.body.title,
+      body: req.body.body,
+      slug: slugify(req.body.title).toLowerCase()
+    }).then(() => {
+      post = post.get({ plain: true });
+      client.getUser(post.authorId).then(user => {
+        post.authorName = user.profile.firstName + " " + user.profile.lastName;
+        res.redirect("/" + slugify(req.body.title).toLowerCase());
+      });
+    });
+  });
+});
+
 
 
 

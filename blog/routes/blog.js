@@ -153,6 +153,28 @@ router.post("/:slug/edit", ensureAuthenticated, (req, res, next) => {
   });
 });
 
+// Delete a post
+router.post("/:slug/delete", (req, res, next) => {
+  models.Post.findOne({
+    where: {
+      slug: req.params.slug,
+      authorId: req.user.id
+    }
+  }).then(post => {
+    if (!post) {
+      return res.render("error", {
+        message: "Page not found.",
+        error: {
+          status: 404,
+        }
+      });
+    }
+
+    post.destroy();
+    res.redirect("/dashboard");
+  });
+});
+
 
 
 

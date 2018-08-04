@@ -72,6 +72,32 @@ router.get("/dashboard", ensureAuthenticated, (req, res, next) => {
   });
 });
 
+// Create a new post
+router.post("/dashboard", ensureAuthenticated, (req, res, next) => {
+  models.Post.create({
+    title: req.body.title,
+    body: req.body.body,
+    authorId: req.user.id,
+    slug: slugify(req.body.title).toLowerCase()
+  }).then(newPost => {
+    models.Post.findAll({
+      where: {
+        authorId: req.user.id
+      },
+      order: sequelize.literal("createdAt DESC")
+    }).then(posts => {
+      let postData = [];
+
+      posts.forEach(post => {
+        postData.push(post.get({ plain: true }));
+      });
+
+      res.render("dashboard", { post: newPost, posts: postData });
+    });
+  });
+});
+
+
 
 
 module.exports = router;
